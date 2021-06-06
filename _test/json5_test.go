@@ -1,4 +1,4 @@
-package json5
+package json5_test
 
 import (
 	"encoding/json"
@@ -8,6 +8,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/admpub/json5"
 	"github.com/kylelemons/godebug/pretty"
 	"github.com/robertkrimen/otto"
 )
@@ -36,7 +37,7 @@ func TestJSON5Decode(t *testing.T) {
 
 		parseJSON5 := func() (interface{}, error) {
 			var res interface{}
-			return res, Unmarshal(data, &res)
+			return res, json5.Unmarshal(data, &res)
 		}
 		parseJSON := func() (interface{}, error) {
 			var res interface{}
@@ -115,7 +116,7 @@ func TestJSON5Decode(t *testing.T) {
 			if specFile != nil {
 				defer specFile.Close()
 				expectedErr = &ErrorSpec{}
-				if err := NewDecoder(specFile).Decode(expectedErr); err != nil {
+				if err := json5.NewDecoder(specFile).Decode(expectedErr); err != nil {
 					t.Errorf("error decoding %s: %s", specName, err)
 					return nil
 				}
@@ -137,7 +138,7 @@ func TestQuotedQuote(t *testing.T) {
 	var v struct {
 		E string
 	}
-	if err := Unmarshal([]byte(`{e:"'"}`), &v); err != nil {
+	if err := json5.Unmarshal([]byte(`{e:"'"}`), &v); err != nil {
 		t.Error(err)
 	}
 	if v.E != "'" {
@@ -148,7 +149,7 @@ func TestQuotedQuote(t *testing.T) {
 func TestInvalidNewline(t *testing.T) {
 	expected := "invalid character '\\n' in string literal"
 	var v interface{}
-	if err := Unmarshal([]byte("{a:'\\\r0\n'}"), &v); err == nil || err.Error() != expected {
+	if err := json5.Unmarshal([]byte("{a:'\\\r0\n'}"), &v); err == nil || err.Error() != expected {
 		t.Errorf("expected error %q, got %s", expected, err)
 	}
 }
